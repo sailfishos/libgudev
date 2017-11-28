@@ -1,0 +1,3 @@
+[submodule "libgudev"]
+	path = libgudev
+	url = git://git.gnome.org/libgudev
