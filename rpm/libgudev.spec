@@ -1,5 +1,5 @@
 Name:           libgudev
-Version:        232
+Version:        237
 Release:        1
 Summary:        GObject-based wrapper library for libudev
 
@@ -10,10 +10,7 @@ Source0:        https://download.gnome.org/sources/libgudev/%{version}/%{name}-%
 BuildRequires: pkgconfig(glib-2.0)
 BuildRequires: pkgconfig(gobject-introspection-1.0)
 BuildRequires: pkgconfig(udev)
-BuildRequires: gettext-devel
-BuildRequires: autoconf
-BuildRequires: automake
-BuildRequires: libtool
+BuildRequires: meson
 
 %description
 This library makes it much simpler to use libudev from programs
@@ -31,27 +28,19 @@ This package is necessary to build programs using %{name}.
 %prep
 %setup -q -n %{name}-%{version}/%{name}
 
-# Disable gtk-doc
-sed -i 's/^DISTCHECK_CONFIGURE_FLAGS/#DISTCHECK_CONFIGURE_FLAGS/g' Makefile.am
-sed -i '/docs\/Makefile/d' configure.ac
 
 %build
-autoreconf -vfi
-%configure --disable-umockdev
-make %{?_smp_mflags}
+%meson -Dtests=disabled -Dvapi=disabled
+%meson_build
 
 %install
-%makeinstall
-rm %{buildroot}%{_libdir}/*.la
-
-%check
-make check
+%meson_install
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
-%doc COPYING
+%license COPYING
 %{_libdir}/libgudev-1.0.so.*
 %{_libdir}/girepository-1.0/GUdev-1.0.typelib
 
